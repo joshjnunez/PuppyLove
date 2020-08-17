@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server/index.js",
+    "dev": "webpack --mode development --open --hot --watch",
     "build": "webpack --mode production --watch",
     "build:css": "postcss client/styles/tailwind.scss -o client/styles/index.scss"
   },

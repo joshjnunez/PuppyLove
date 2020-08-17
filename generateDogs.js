@@ -14,7 +14,7 @@ const generateMisc = () => {
   dog.weight = Math.floor(Math.random() * 80);
   dog.age = Math.floor(Math.random() * 13);
   dog.fixed = Math.floor(Math.random() * 2);
-  dog.id_user = Math.floor(Math.random() * 5);
+  dog.id_user = Math.floor(Math.random() * 6);
   const rand1 = Math.floor(Math.random() * adjectives.length)
   const rand2 = Math.floor(Math.random() * adjectives.length)
   dog.description = `${adjectives[rand1].split('')[0].toUpperCase()}${adjectives[rand1].slice(1)} and ${adjectives[rand2]}.`

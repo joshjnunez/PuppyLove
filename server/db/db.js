@@ -5,12 +5,13 @@ const {
   DB_HOST,
   DB_USER,
   DB_NAME,
+  DB_PW,
 } = process.env;
 
 const sequelize = new Sequelize(
   DB_NAME,
   DB_USER,
-  '',
+  DB_PW,
   {
     host: DB_HOST,
     dialect: 'mysql',

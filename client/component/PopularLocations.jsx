@@ -15,7 +15,7 @@ class PopularLocations extends Component {
       places: [],
       address: '',
 			city: '',
-			area: '',
+			area: '', 
 			state: '',
 			mapPosition: {
 				lat: this.props.center.lat,

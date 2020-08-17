@@ -14,6 +14,7 @@ const {
   addDog, addLoc, getLocs, getFriends,
   getCurrentDog,
 } = require('./queries.js');
+const { User } = require('./db/db.js');
 
 const PORT = process.env.PORT || 3000;
 const CLIENT_PATH = path.join(__dirname, '../client/dist');
@@ -74,20 +75,33 @@ app.post('/dogs', (req, res) => {
     .catch((err) => res.status(500).send(err));
 });
 
-// app.post('/updateUserAndDog', (req, res) => {
-//   const userEditObj = req.body.user;
-//   const dogEditObj = req.body.dog;
-//   console.log('dogObj: ', dogEditObj);
-//   const userId = req.session.passport.user.id;
-//   const updateUserObj = null;
-//   addUser(userId, userEditObj)
-//     .then((result) => console.log(result))
-//     .catch((err) => console.log(err));
-//   updateDog(userId, dogEditObj).then((result) => {
-//     res.send({ user: updateUserObj, dog: result.data });
-//   })
-//     .catch((err) => console.log(err));
-// });
+app.post('/updateUserAndDog', (req, res) => {
+  const userEditObj = req.body.user;
+  // const dogEditObj = req.body.dog;
+  console.log('User', userEditObj);
+  // console.log('Dog', dogEditObj);
+  console.log('passport user id', req.session.passport.user);
+  const passId = req.session.passport.user.id;
+  const passEmail = req.session.passport.user.email;
+  // const loggedInUser = User.findAll({ where: { username: null } }).then(userObj => console.log(userObj));
+  // console.log('HERE', loggedInUser);
+  User.update({
+    username: userEditObj.username,
+    cell: userEditObj.cell,
+    hometown: userEditObj.hometown,
+    // passId or leave as long googleId
+    // googleId: passId,
+  }, { where: { email: passEmail || null } });
+  // console.log('dogObj: ', dogEditObj);
+  // const updateUserObj = null;
+  // addUser(userId, userEditObj)
+  //   .then((result) => console.log(result))
+  //   .catch((err) => console.log(err));
+  // updateDog(userId, dogEditObj).then((result) => {
+  //   res.send({ user: updateUserObj, dog: result.data });
+  // })
+  // .catch((err) => console.log(err));
+});
 
 app.get('/currentDog', (req, res) => {
   const userId = req.session.passport.user.id;

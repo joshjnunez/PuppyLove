@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server/index.js",
+    "dev": "webpack --mode development --open --hot --watch",
     "build": "webpack --mode production --watch",
     "build:css": "postcss client/styles/tailwind.scss -o client/styles/index.scss"
   },
@@ -35,6 +36,7 @@
     "passport": "^0.4.1",
     "passport-google-oauth20": "^2.0.0",
     "react": "^16.13.1",
+    "react-bootstrap": "^1.3.0",
     "react-dom": "^16.13.1",
     "react-geocode": "^0.2.1",
     "react-google-autocomplete": "^1.2.6",

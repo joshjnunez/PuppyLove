@@ -27,6 +27,7 @@ function Sidebar({ sessUser, sessDog, getFriends, allDogs }) {
         <Link to="/myprofile" id='pro'>My Profile</Link>
         <Link to={`/dogprofile/${sessDog.id}`} id='dog' data={allDogs} onClick={() => getFriends(sessDog.id)}>Profile</Link>
         <Link to="/popular" id='loc'>Popular Locations</Link>
+        <Link to="/friendslist" id='flist'>Friends List</Link>
       </div>
     </div>
   );

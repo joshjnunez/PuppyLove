@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Route } from 'react-router-dom';
 import axios from 'axios';
+import { Row, Col } from "react-bootstrap";
 
 function Choice({ open, sessUser, sessDog, dogViews, allDogs, getFriends, index, setIndex, dogDisplayInfo, setDogDisplayInfo }) {
 
@@ -34,13 +35,25 @@ function Choice({ open, sessUser, sessDog, dogViews, allDogs, getFriends, index,
   return (
     <div>
       <div>
-        <button id='settings' onClick={open}>Menu</button>
-        {dogDisplay}
-        <div id='select'>
-          <button id='no' onClick={dislike}>No</button>
-          <Link to={`/dogprofile/${dogDisplayInfo.id}`} id='view' onClick={() => getFriends(dogDisplayInfo.id)}>View Profile</Link>
-          <button id='yes' onClick={dislike}>Yes</button>
-        </div>
+        <Row>
+          <button id='settings' onClick={open}>Menu</button>
+        </Row>
+        <Row>
+          <Col>
+            {dogDisplay}
+          </Col>
+          <Col>
+            <Link to={`/dogprofile/${dogDisplayInfo.id}`} id='view' onClick={() => getFriends(dogDisplayInfo.id)}>View Profile</Link>
+          </Col>
+        </Row>
+        <Row id='select'>
+          <Col>
+            <button id='no' onClick={dislike}>No</button>
+          </Col>
+          <Col>
+            <button id='yes' onClick={dislike}>Yes</button>
+          </Col>
+        </Row>
       </div>
     </div>
   );

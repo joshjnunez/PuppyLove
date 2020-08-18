@@ -48,7 +48,7 @@ function App(props) {
       })
       .catch((err) => console.error(err, 'Could not get all dogs.'));
    }, []);
-
+   //error on line 57
    useEffect(() => {
       axios.get('/dogs')
          .then(response => {

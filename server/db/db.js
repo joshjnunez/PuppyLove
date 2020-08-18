@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { Sequelize, DataTypes } = require('sequelize');
+const { generate } = require('../../generateDogs');
 
 const {
   DB_HOST,
@@ -21,7 +22,10 @@ const sequelize = new Sequelize(
 );
 
 sequelize.authenticate()
-  .then(() => console.log('Connection to db completed'))
+  .then(() => {
+    console.log('Connection to db completed')
+    generate(); // Generates new dogs from the generateDogs.js script
+  })
   .catch((err) => console.error('Oopsies there is an error: ', err));
 
 const User = sequelize.define('User', {

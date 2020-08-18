@@ -4,6 +4,24 @@ import axios from 'axios';
 function MyProfile({ sessUser, sessDog, open }) {
   const { id, dog_name, breed, weight, age, fixed, description, image, id_user } = sessDog;
   const { username, cell, home_town, email } = sessUser
+
+  const sessUserId = sessUser.id;
+
+
+  //working on myProfile updating
+  //axios to db to grab all related user host info and user host dog info
+  //then reset state
+  //then render it to the DOM
+  // and do same for dogs
+  const reRenderProfile = (sessUserId) => {
+    // axios.get(`./profile/${sessUserId}`).then(res =>
+    //   //reset state
+    //   console.log(res.data)
+    //   ).catch(err => console.log(err))
+  }
+
+
+
   const updateUserAndDogInfo = (obj) => {
     axios.post('./updateUserAndDog', obj)
     .then((result) => {
@@ -49,7 +67,7 @@ function MyProfile({ sessUser, sessDog, open }) {
         to="/myprofile"
         onClick={() => {
           editChange(false);
-          console.group('editinfo submit clicked')
+          console.group('edit info submit clicked')
           updateUserAndDogInfo({
             user: {
               username: usernameEdit,
@@ -76,7 +94,7 @@ function MyProfile({ sessUser, sessDog, open }) {
         <div id='divEditClicked'>
           <button id='settings' onClick={open}>Menu</button>
           <div class='profileContainer'>
-            <div>{`${username}'s Profile Inforamtion`}</div>
+            <div>{`${username}'s Profile Information`}</div>
             <div class='profileInfo'>{`Username: ${username}`}</div>
             <div class='profileInfo'>{`Email: ${email}`}</div>
             <div class='profileInfo'>{`Cell Phone Number: ${cell}`}</div>

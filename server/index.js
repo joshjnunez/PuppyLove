@@ -180,6 +180,20 @@ app.get('*', (req, res) => {
   res.sendFile(`${CLIENT_PATH}/index.html`);
 });
 
+
+//working on myProfile updating
+// app.get('/profileUpdate', (req, res) => {
+//   User.findAll({ where: { googleId: req.body } })
+//     .then((user) => {
+//       console.log(req);
+//       console.log(1, req.body);
+//       console.log(2, req.query);
+//       console.log(3, req.params);
+//       res.send(user);
+//     })
+//     .catch((err) => console.log(err));
+// });
+
 /* ============================================================================ */
 
 /* Starting server */

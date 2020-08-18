@@ -19,6 +19,7 @@ function App(props) {
    const [ friends, setFriends ] = useState('');
    const [ index, setIndex ] = useState(0);
    const [ dogDisplayInfo, setDogDisplayInfo ] = useState('');
+   // const [ allUsers, setAllUsers ] = useState('');
 
    useEffect(() => {
       axios.get('/session')
@@ -28,17 +29,26 @@ function App(props) {
       .catch(err => console.error(err));
    }, []);
 
+
+   // useEffect(() => {
+   //    axios.get('/users').then(response => {
+   //       setAllUsers(response.data)
+   //       // response.data
+   //    }).catch(err => console.log(err))
+   // }, []);
+
+
    // useEffect(() => {
    //    axios.get('/myProfileInfo')
    //       .then(response => setSessUser(response.data[0]))
    //       .catch(err => console.log(16, err));
    // }, [])
 
-   // useEffect(() => {
-   //    axios.get('/currentDog')
-   //    .then(response => setSessDog(response.data[0]))
-   //    .catch(err => console.error('could not set session dog: ', err));
-   // }, []);
+   useEffect(() => {
+      axios.get('/currentDog')
+      .then(response => setSessDog(response.data[0]))
+      .catch(err => console.error('could not set session dog: ', err));
+   }, []);
 
    useEffect(() => {
       axios.get('/dogs')

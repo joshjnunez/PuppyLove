@@ -8,17 +8,19 @@ import MyProfile from './MyProfile.jsx';
 import DogProfile from './DogProfile.jsx';
 import PopularLocations from './PopularLocations.jsx';
 import SignUp from './SignUp.jsx';
+import Preferences from './Preferences.jsx';
 
 function App(props) {
    const [ lat, setLat ] = useState('');
    const [ lng, setLng ] = useState('');
-   const [ sessUser, setSessUser ] = useState('');
+   const [ sessUser, setSessUser ] = useState({});
    const [ sessDog, setSessDog ] = useState('');
    const [ dogViews, setDogViews ] = useState('');
    const [ allDogs, setAllDogs ] = useState('');
+   const [ displayDogs, setDisplayDogs ] = useState('');
    const [ friends, setFriends ] = useState('');
    const [ index, setIndex ] = useState(0);
-   const [ dogDisplayInfo, setDogDisplayInfo ] = useState('');
+   const [ filter, setFilter ] = useState(0);
 
    useEffect(() => {
       axios.get('/session')
@@ -43,27 +45,24 @@ function App(props) {
    useEffect(() => {
       axios.get('/dogs')
       .then((response) => {
-         setAllDogs(response.data);
-         setDogDisplayInfo(response.data[0]);
+         let dogs = response.data;
+         setAllDogs(dogs);
+         setDisplayDogs(dogs);
+         // setDogDisplayInfo(dogs[index]);
+         return dogs;
+      })
+      .then((dogs) => {
+         setDogViews(dogs.map(option => {
+            return (
+               <div id='choice-box' key={option.id} style={{ backgroundImage: `url('${option.image}')` }}>
+                  <div id='title'>{option.dog_name}</div>
+                  <div id='breed'>{option.breed}</div>
+                  <div id='age'>{`${option.age} Years Old`}</div>
+               </div>
+            );
+         }));
       })
       .catch((err) => console.error(err, 'Could not get all dogs.'));
-   }, []);
-   //error on line 57
-   useEffect(() => {
-      axios.get('/dogs')
-         .then(response => {
-            return response.data.map(option => {
-               return (
-                  <div id='choice-box' key={option.id} style={{ backgroundImage: `url('${option.image}')` }}>
-                     <div id='title'>{option.dog_name}</div>
-                     <div id='breed'>{option.breed}</div>
-                     <div id='age'>{`${option.age} Years Old`}</div>
-                  </div>
-               );
-            });
-         })
-         .then(choices => setDogViews(choices))
-         .catch(err => console.error(err, 'Could not get all dogs.'));
    }, []);
 
     useEffect(() => {
@@ -96,17 +95,49 @@ function App(props) {
       .catch(err => console.error('could not set session dog: ', err));
    }
 
+   const filterDogs = ({ minAge, maxAge, breed }) => {
+      let dogs = allDogs.slice();
+      dogs = dogs.filter((dog) => {
+         let bool = true;
+         if (minAge && minAge !== '') {
+            bool = dog.age >= minAge;
+         }
+         if (maxAge && bool && maxAge !== '') {
+            bool = dog.age <= maxAge;
+         }
+         if (breed && bool && breed !== '') {
+            bool = dog.breed.toUpperCase().includes(breed.toUpperCase());
+         }
+         return bool;
+      })
+      setDisplayDogs(dogs);
+      setDogViews(dogs.map(option => {
+         return (
+            <div id='choice-box' key={option.id} style={{ backgroundImage: `url('${option.image}')` }}>
+               <div id='title'>{option.dog_name}</div>
+               <div id='breed'>{option.breed}</div>
+               <div id='age'>{`${option.age} Years Old`}</div>
+            </div>
+         );
+      }));
+   }
+
    return (
       <Router>
          <Sidebar sessUser={sessUser} sessDog={sessDog} getFriends={getFriends} allDogs={allDogs} />
          <div className='App'>
             <Switch>
-               <Route exact={true} path="/" render={() => (<Choice open={open} sessUser={sessUser} sessDog={sessDog} dogViews={dogViews} allDogs={allDogs} getFriends={getFriends} index={index} setIndex={setIndex} dogDisplayInfo={dogDisplayInfo} setDogDisplayInfo={setDogDisplayInfo} />)} />
+               <Route exact={true} path="/" render={() => {
+                  if (displayDogs.length) {
+                     return <Choice open={open} sessUser={sessUser} sessDog={sessDog} dogViews={dogViews} displayDogs={displayDogs} getFriends={getFriends} index={index} setIndex={setIndex} />
+                  }
+               } } />
                <Route exact path="/login" render={() => (<Login />)} />
                <Route path="/myprofile" render={() => (<MyProfile open={open} sessUser={sessUser} sessDog={sessDog} />)} />
                <Route path="/dogprofile" render={() => (<DogProfile open={open} sessUser={sessUser} sessDog={sessDog} allDogs={allDogs} friends={friends} getFriends={getFriends} />)} />
                <Route path="/popular" render={() => (<PopularLocations sessUser={sessUser} sessDog={sessDog} google={props.google} open={open} center={{ lat: 29.9511, lng: 90.0715 }} zoom={10} />)} />
                <Route path="/signUp" render={() => (<SignUp sessUser={sessUser} sessDog={sessDog} getSessDog={getSessDog}/>)} />
+               <Route path="/preferences" render={() => (<Preferences open={open} filterDogs={filterDogs} setFilter={setFilter} setIndex={setIndex}></Preferences>)} />
             </Switch>
          </div>
       </Router>

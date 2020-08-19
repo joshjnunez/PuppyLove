@@ -27,6 +27,7 @@ function DogProfile({ match, open, sessUser, sessDog, allDogs, friends, getFrien
     <div>
       <div class='profileContainer'>
         <button id='settings' onClick={open}>Menu</button>
+        <Link to="/" id='choice'>Home</Link>
         <div>
           <Route
             path={'/dogProfile/:id'}

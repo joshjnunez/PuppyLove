@@ -111,7 +111,7 @@ h3 {
   margin: 43% 0 10px 0;
   #no {
     @include swipe($no);
-    margin-left: 440px;
+    margin-left: 10px;
   }
   #view {
     font-size: 40px;
@@ -127,8 +127,9 @@ h3 {
     }
   }
   #yes {
-    @include swipe($yes);
-  }
+      @include swipe($yes);
+      margin-right: 10px;
+    }
 }
 
 #choice-box {
@@ -216,6 +217,16 @@ h3 {
       @include link();
       top: 340px;
     }
+    #flist {
+      @include hoverAction();
+      @include link();
+      top: 400px;
+    }
+    #pref {
+      @include hoverAction();
+      @include link();
+      top: 460px;
+    }
   }
 }
 
@@ -286,6 +297,15 @@ h3 {
 }
 
 .map {
+  width: 70vw;
+  height: 60vh;
+  margin-left: 200px;
+  margin-bottom: 20px;
+  border: 5px solid #333;
+  border-radius: 20px;
+}
+
+.prefs {
   width: 70vw;
   height: 60vh;
   margin-left: 200px;

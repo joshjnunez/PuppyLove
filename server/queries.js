@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
+// required matches and likes
 const {
-  User, Dog, FriendJoint, Location,
+  User, Dog, FriendJoint, Location, Matches, Likes,
 } = require('./db/db.js');
 
 const isAccCreated = (googleId) => User.findAll({
@@ -29,8 +30,10 @@ const addUser = (userId, userInfoObj) => User.update(userInfoObj, { where: { id:
 
 const updateDog = (userId, userInfoObj) => Dog.update(userInfoObj, { where: { id_user: userId } });
 
+// addFriend is a function that takes a friend obj and creates a new row in the friendJoint table
 const addFriend = (friendObj) => FriendJoint.create(friendObj);
 
+// getFriends takes an id and in the friendjoint table and finds all the frien
 const getFriends = (id) => {
   FriendJoint.findAll({ where: { id_dog: id } })
     .then((res) => {
@@ -66,6 +69,19 @@ const addDog = (dogInfo) => Dog.create(dogInfo);
 
 const addLoc = (locObj) => Location.create(locObj);
 
+// add like to like table
+const addLike = (likeObj) => Likes.create(likeObj);
+
+// query the db for matches
+const getMatches = (id) => {
+  Matches.findAll({
+    where: {
+      id_user: id,
+      result: true,
+    },
+  });
+};
+
 module.exports = {
   isAccCreated,
   getUsers,
@@ -79,4 +95,6 @@ module.exports = {
   addLoc,
   getUser,
   getLocs,
+  addLike,
+  getMatches,
 };

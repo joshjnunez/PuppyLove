@@ -12,7 +12,7 @@ const {
   addUser, getUsers, getDogs,
   addFriend, isAccCreated,
   addDog, addLoc, getLocs, getFriends,
-  getCurrentDog,
+  getCurrentDog, 
 } = require('./queries.js');
 
 const PORT = process.env.PORT || 3000;
@@ -167,6 +167,11 @@ app.get('/session', (req, res) => {
 app.get('*', (req, res) => {
   res.sendFile(`${CLIENT_PATH}/index.html`);
 });
+
+// // route to post like by user to db
+// app.post('/like', (req, res)=> {
+
+// })
 
 /* ============================================================================ */
 

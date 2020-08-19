@@ -148,31 +148,38 @@ const FriendJoint = sequelize.define('FriendJoint', {
 
 // define Matches table model
 const Matches = sequelize.define('Matches', {
-  id_user: {
+  id_userA: {
     type: Sequelize.INTEGER,
     references: {
       model: 'User',
       referencesKey: 'id',
     },
   },
-  id_user_2: Sequelize.INTEGER,
+  id_userB: {
+    type: Sequelize.INTEGER,
+    references: {
+      model: 'User',
+      referencesKey: 'id',
+    },
+  },
   result: Sequelize.BOOLEAN,
 });
 
 // define Like table model
 const Likes = sequelize.define('Likes', {
-  id_user: {
+  id_userA: {
     type: Sequelize.INTEGER,
     references: {
       model: 'Matches',
-      referencesKey: 'id_user',
+      referencesKey: 'id_userA',
     },
   },
-  id_user_2: {
+  id_userB: {
     type: Sequelize.INTEGER,
     references: 'Matches',
-    referencesKey: 'id_user_2',
+    referencesKey: 'id_userB',
   },
+  result: Sequelize.BOOLEAN,
 });
 
 // added matches and like to be routed

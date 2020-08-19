@@ -63,9 +63,10 @@ CREATE TABLE IF NOT EXISTS Likes(
   id INT NOT NULL AUTO_INCREMENT,
   id_userA INT NOT NULL,
   id_userB INT NOT NULL,
-  PRIMARY KEY(id),
-  FOREIGN KEY(id_userA) REFERENCES Matches(id_userA),
-  FOREIGN KEY(id_userB) REFERENCES Matches(id_userB)
+	result BOOLEAN,
+  PRIMARY KEY(id)
+  -- FOREIGN KEY(id_userA) REFERENCES Matches(id_userA),
+  -- FOREIGN KEY(id_userB) REFERENCES Matches(id_userB)
 );
 
 

@@ -27,7 +27,11 @@ function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, in
         dogOwnerId: displayDogs[index].id_user,
         userId: sessUser.id
       })
-      .then((response) => {
+      .then(({ data }) => {
+        console.log('the data from the response:', data);
+          if (data !== 'Created') {
+            console.log('there was a match')
+          }
           // response should have bool if user was a match (if exists an entry in likes table that shows the dogOwnerID liked current user ID)
         })
         setIndex(newIndex);

@@ -25,13 +25,13 @@ const getDogs = async (id, req, res) => {
   if (id) {
     const like = await Likes.findAll({
       where: {
-        id_UserA: id,
+        id_userA: id,
       },
       raw: true,
     });
     const likesObj = {};
     like.forEach((likeObj) => {
-      likesObj[likeObj.id_UserB] = null;
+      likesObj[likeObj.id_userB] = null;
     });
     findDogs.filter((dog) => !(dog.id_user in likesObj));
   }

@@ -173,18 +173,18 @@ app.get('*', (req, res) => {
 // route to post like by user to db
 app.post('/like', async (req, res)=> {
   const { result, dogOwnerId, userId } = req.body;
-  // console.log(req.body);
+  console.log('this is the request body in like route', req.body);
   // res.sendStatus(200);
   const newLike = await Likes.create({
-    id_UserB: dogOwnerId,
-    id_UserA: userId,
+    id_userB: dogOwnerId,
+    id_userA: userId,
     result,
   });
 
   const likes = await Likes.findOne({
     where: {
-      id_UserA: dogOwnerId,
-      id_UserB: userId,
+      id_userA: dogOwnerId,
+      id_userB: userId,
       result: true,
     },
   });
@@ -192,8 +192,8 @@ app.post('/like', async (req, res)=> {
   if (likes !== null) {
     res.send(likes);
     Matches.create({
-      id_UserA: userId,
-      id_UserB: dogOwnerId,
+      id_userA: userId,
+      id_userB: dogOwnerId,
       result: true,
     });
   } else {

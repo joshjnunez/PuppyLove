@@ -13,7 +13,7 @@ import Preferences from './Preferences.jsx';
 function App(props) {
    const [ lat, setLat ] = useState('');
    const [ lng, setLng ] = useState('');
-   const [ sessUser, setSessUser ] = useState({});
+   const [ sessUser, setSessUser ] = useState({id: 0});
    const [ sessDog, setSessDog ] = useState('');
    const [ dogViews, setDogViews ] = useState('');
    const [ allDogs, setAllDogs ] = useState('');

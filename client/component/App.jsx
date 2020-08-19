@@ -20,7 +20,6 @@ function App(props) {
    const [ displayDogs, setDisplayDogs ] = useState('');
    const [ friends, setFriends ] = useState('');
    const [ index, setIndex ] = useState(0);
-   const [ dogDisplayInfo, setDogDisplayInfo ] = useState('');
    const [ filter, setFilter ] = useState(0);
 
    useEffect(() => {
@@ -49,7 +48,7 @@ function App(props) {
          let dogs = response.data;
          setAllDogs(dogs);
          setDisplayDogs(dogs);
-         setDogDisplayInfo(dogs[0]);
+         // setDogDisplayInfo(dogs[index]);
          return dogs;
       })
       .then((dogs) => {
@@ -128,7 +127,11 @@ function App(props) {
          <Sidebar sessUser={sessUser} sessDog={sessDog} getFriends={getFriends} allDogs={allDogs} />
          <div className='App'>
             <Switch>
-               <Route exact={true} path="/" render={() => (<Choice open={open} sessUser={sessUser} sessDog={sessDog} dogViews={dogViews} displayDogs={displayDogs} getFriends={getFriends} index={index} setIndex={setIndex} dogDisplayInfo={dogDisplayInfo} setDogDisplayInfo={setDogDisplayInfo} />)} />
+               <Route exact={true} path="/" render={() => {
+                  if (displayDogs.length) {
+                     return <Choice open={open} sessUser={sessUser} sessDog={sessDog} dogViews={dogViews} displayDogs={displayDogs} getFriends={getFriends} index={index} setIndex={setIndex} />
+                  }
+               } } />
                <Route exact path="/login" render={() => (<Login />)} />
                <Route path="/myprofile" render={() => (<MyProfile open={open} sessUser={sessUser} sessDog={sessDog} />)} />
                <Route path="/dogprofile" render={() => (<DogProfile open={open} sessUser={sessUser} sessDog={sessDog} allDogs={allDogs} friends={friends} getFriends={getFriends} />)} />

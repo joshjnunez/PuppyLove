@@ -3,45 +3,55 @@ import { Link, Route } from 'react-router-dom';
 import axios from 'axios';
 import { Row, Col } from "react-bootstrap";
 
-function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, index, setIndex, dogDisplayInfo, setDogDisplayInfo }) {
+function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, index, setIndex }) {
 
   const [ dogDisplay, setDogDisplay ] = useState('');
+  const [ dogDisplayInfo, setDogDisplayInfo ] = useState('');
 
   useEffect(() => {
-    setDogDisplay(dogViews[0]);
-  }, [dogViews]);
+    // console.log('the current index', index)
+    setDogDisplayInfo(displayDogs[index])
+    setDogDisplay(dogViews[index]);
+  }, [dogViews, displayDogs]);
+  
+
+  // useEffect(() => {
+    
+  //   console.log('the url', url)
+  // }, [])
 
   const like = (result) => {
+    const newIndex = index + 1;
     // axios.post('/like', {
-    //   result, // boolean true/false
-    //   dogOwnerId: allDogs[index].id_user,
-    //   userId: 'placeholder for current logged in User ID'
-    // })
-    // .then((response) => {
-    //   // response should have bool if user was a match (if exists an entry in likes table that shows the dogOwnerID liked current user ID)
-    // })
-    setIndex(index + 1);
-    if (index < dogViews.length) {
-      setDogDisplay(() => dogViews[index]);
-      setDogDisplayInfo(displayDogs[index]);
-    } else {
-      setDogDisplay(<div id='choice-box'><div id='alt'>Looks like you've made it through all the dogs in you're area. Please check back later.</div></div>);
-    }
-  };
+      //   result, // boolean true/false
+      //   dogOwnerId: allDogs[index].id_user,
+      //   userId: 'placeholder for current logged in User ID'
+      // })
+      // .then((response) => {
+        //   // response should have bool if user was a match (if exists an entry in likes table that shows the dogOwnerID liked current user ID)
+        // })
+        setIndex(newIndex);
+        if (newIndex < dogViews.length) {
+          setDogDisplay(() => dogViews[newIndex]);
+          setDogDisplayInfo(displayDogs[newIndex]);
+        } else {
+          setDogDisplay(<div id='choice-box'><div id='alt'>Looks like you've made it through all the dogs in you're area. Please check back later.</div></div>);
+        }
+      };
 
-  // const addFriend = () => {
-  //   axios.post('/friends',  {
-  //     id_dog: sessDog.id,
-  //     id_friend: dogDisplayInfo.id,
-  //     bool_friend: 0
-  //   })
-  //   .then(() => dislike())
-  //   .then(() => console.log('this friend was added'))
-  //   .catch((err) => console.error(err, 'we couldn\'t add this friend'));
-  // };
-
-  return (
-    <div>
+      // const addFriend = () => {
+        //   axios.post('/friends',  {
+          //     id_dog: sessDog.id,
+          //     id_friend: dogDisplayInfo.id,
+          //     bool_friend: 0
+          //   })
+          //   .then(() => dislike())
+          //   .then(() => console.log('this friend was added'))
+          //   .catch((err) => console.error(err, 'we couldn\'t add this friend'));
+          // };
+          
+          return (
+            <div>
       <div>
         <Row>
           <button id='settings' onClick={open}>Menu</button>

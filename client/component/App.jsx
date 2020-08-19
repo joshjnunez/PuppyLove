@@ -43,7 +43,7 @@ function App(props) {
    // }, []);
 
    useEffect(() => {
-      axios.get('/dogs')
+      axios.get(`/dogs/${sessUser.id}`)
       .then((response) => {
          let dogs = response.data;
          setAllDogs(dogs);

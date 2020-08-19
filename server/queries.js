@@ -20,7 +20,23 @@ const getUser = (userId) => User.findAll({
 
 const getUsers = () => User.findAll();
 
-const getDogs = () => Dog.findAll();
+const getDogs = async (id, req, res) => {
+  const findDogs = await Dog.findAll({});
+  if (id) {
+    const like = await Likes.findAll({
+      where: {
+        id_UserA: id,
+      },
+      raw: true,
+    });
+    const likesObj = {};
+    like.forEach((likeObj) => {
+      likesObj[likeObj.id_UserB] = null;
+    });
+    findDogs.filter((dog) => !(dog.id_user in likesObj));
+  }
+  res.send(findDogs);
+};
 
 const getCurrentDog = (userId) => Dog.findAll({ where: { id_user: userId } });
 

@@ -60,9 +60,6 @@ function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, in
           <Col>
             {dogDisplay}
           </Col>
-          <Col>
-            <Link to={`/dogprofile/${dogDisplayInfo.id}`} id='view' onClick={() => getFriends(dogDisplayInfo.id)}>View Profile</Link>
-          </Col>
         </Row>
         <Row id='select'>
           <Col>
@@ -70,6 +67,9 @@ function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, in
           </Col>
           <Col>
             <button id='yes' onClick={() => like(true)}>Yes</button>
+          </Col>
+          <Col>
+            <Link to={`/dogprofile/${dogDisplayInfo.id}`} id='view' onClick={() => getFriends(dogDisplayInfo.id)}>View Profile</Link>
           </Col>
         </Row>
       </div>

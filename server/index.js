@@ -14,6 +14,7 @@ const {
   addDog, addLoc, getLocs, getFriends,
   getCurrentDog, 
 } = require('./queries.js');
+const { Likes, Matches } = require('./db/db.js');
 
 const PORT = process.env.PORT || 3000;
 const CLIENT_PATH = path.join(__dirname, '../client/dist');
@@ -54,10 +55,11 @@ app.get('/google/callback',
       .catch((err) => res.status(500).send(err));
   });
 
-app.get('/dogs', (req, res) => {
-  getDogs()
-    .then((list) => res.status(200).send(list))
-    .catch((err) => res.status(500).send(err));
+app.get('/dogs/:id', (req, res) => {
+  let { id } = req.params;
+  getDogs(id, req, res);
+    // .then((list) => res.status(200).send(list))
+    // .catch((err) => res.status(500).send(err));
 });
 
 // app.get('/myProfileInfo', (req, res) => {
@@ -168,10 +170,38 @@ app.get('*', (req, res) => {
   res.sendFile(`${CLIENT_PATH}/index.html`);
 });
 
-// // route to post like by user to db
-// app.post('/like', (req, res)=> {
+// route to post like by user to db
+app.post('/like', async (req, res)=> {
+  const { result, dogOwnerId, userId } = req.body;
+  // console.log(req.body);
+  // res.sendStatus(200);
+  const newLike = await Likes.create({
+    id_UserB: dogOwnerId,
+    id_UserA: userId,
+    result,
+  });
 
-// })
+  const likes = await Likes.findOne({
+    where: {
+      id_UserA: dogOwnerId,
+      id_UserB: userId,
+      result: true,
+    },
+  });
+
+  if (likes !== null) {
+    res.send(likes);
+    Matches.create({
+      id_UserA: userId,
+      id_UserB: dogOwnerId,
+      result: true,
+    });
+  } else {
+    res.sendStatus(201);
+  }
+});
+
+// app.get('/')
 
 /* ============================================================================ */
 

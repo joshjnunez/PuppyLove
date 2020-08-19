@@ -22,14 +22,14 @@ function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, in
 
   const like = (result) => {
     const newIndex = index + 1;
-    // axios.post('/like', {
-      //   result, // boolean true/false
-      //   dogOwnerId: allDogs[index].id_user,
-      //   userId: 'placeholder for current logged in User ID'
-      // })
-      // .then((response) => {
-        //   // response should have bool if user was a match (if exists an entry in likes table that shows the dogOwnerID liked current user ID)
-        // })
+    axios.post('/like', {
+        result, // boolean
+        dogOwnerId: displayDogs[index].id_user,
+        userId: sessUser.id
+      })
+      .then((response) => {
+          // response should have bool if user was a match (if exists an entry in likes table that shows the dogOwnerID liked current user ID)
+        })
         setIndex(newIndex);
         if (newIndex < dogViews.length) {
           setDogDisplay(() => dogViews[newIndex]);

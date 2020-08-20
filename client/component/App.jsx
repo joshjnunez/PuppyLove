@@ -21,14 +21,33 @@ function App(props) {
    const [ friends, setFriends ] = useState('');
    const [ index, setIndex ] = useState(0);
    const [ filter, setFilter ] = useState(0);
+   const [ likes, setLikes ] = useState('');
 
    useEffect(() => {
       axios.get('/session')
       .then(response => {
          setSessUser(response.data)
+         getLikes(response.data.id)
       })
       .catch(err => console.error(err));
    }, []);
+
+   const getLikes = (id) => {
+      const currentId = sessUser.id || id;
+      axios.get(`/like/${currentId}`)
+      .then(({ data }) => {
+         // filterDogs({ likes: data });
+         setLikes(data);
+         console.log('the likes obj A', data)
+      })
+   }
+
+   // useEffect(() => {
+   //    if (displayDogs.length) {
+   //       filterDogs({ likes })
+   //    }
+   //    console.log('dogs:', displayDogs, 'likes', likes);
+   // }, [likes, allDogs, index])
 
    // useEffect(() => {
    //    axios.get('/myProfileInfo')
@@ -43,12 +62,13 @@ function App(props) {
    // }, []);
 
    useEffect(() => {
-      axios.get(`/dogs/${sessUser.id}`)
+      axios.get(`/dogs`)
       .then((response) => {
          let dogs = response.data;
          setAllDogs(dogs);
          setDisplayDogs(dogs);
          // setDogDisplayInfo(dogs[index]);
+         // filterDogs({ likes })
          return dogs;
       })
       .then((dogs) => {
@@ -97,6 +117,13 @@ function App(props) {
 
    const filterDogs = ({ minAge, maxAge, breed }) => {
       let dogs = allDogs.slice();
+      // console.log('displayDogs are initially', dogs, dogs.length)
+      console.log('the likes obj B', likes, 'the sessUser Id:', sessUser.id)
+      if (typeof likes === 'object') {
+         dogs = dogs.filter((dog) => !(likes.hasOwnProperty(dog.id_user) || dog.id_user === sessUser.id))
+         console.log('displayDogs are now', dogs.length)
+      }
+
       dogs = dogs.filter((dog) => {
          let bool = true;
          if (minAge && minAge !== '') {

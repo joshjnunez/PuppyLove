@@ -7,7 +7,7 @@ const cookieSession = require('cookie-session');
 const flash = require('connect-flash');
 const sequelize = require('./db/db.js');
 require('./passport/passport');
-// const data = require('../data.json');
+// const data = require('../data.json')
 const {
   addUser, getUsers, getDogs,
   addFriend, isAccCreated,
@@ -55,11 +55,11 @@ app.get('/google/callback',
       .catch((err) => res.status(500).send(err));
   });
 
-app.get('/dogs/:id', (req, res) => {
-  let { id } = req.params;
-  getDogs(id, req, res);
-    // .then((list) => res.status(200).send(list))
-    // .catch((err) => res.status(500).send(err));
+app.get('/dogs', (req, res) => {
+  // let { id } = req.params;
+  getDogs()
+    .then((list) => res.status(200).send(list))
+    .catch((err) => res.status(500).send(err));
 });
 
 // app.get('/myProfileInfo', (req, res) => {
@@ -68,6 +68,22 @@ app.get('/dogs/:id', (req, res) => {
 //     .then((list) => res.send(list))
 //     .catch((err) => res.sendStatus(500));
 // });
+app.get('/like/:id', async (req, res) => {
+  const { id } = req.params;
+  // const findDogs = await Dog.findAll({});
+  const likes = await Likes.findAll({
+    where: {
+      id_userA: id,
+    },
+    raw: true,
+  });
+  const likesObj = {};
+  likes.forEach((like) => {
+    likesObj[like.id_userB] = null;
+  });
+  res.send(likesObj);
+  // findDogs.filter((dog) => !((dog.id_user in likesObj) || dog.id_user === id));
+});
 
 app.post('/dogs', (req, res) => {
   const dogInfo = req.body;
@@ -189,7 +205,7 @@ app.post('/like', async (req, res)=> {
     },
   });
 
-  if (likes !== null) {
+  if (likes !== null && result === true) {
     res.send(likes);
     Matches.create({
       id_userA: userId,

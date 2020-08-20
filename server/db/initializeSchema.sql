@@ -50,6 +50,27 @@ CREATE TABLE IF NOT EXISTS Friend_joint(
 	FOREIGN KEY(id_dogFriend) REFERENCES Dogs(id)
 );
 
+CREATE TABLE IF NOT EXISTS Matches(
+  id INT NOT NULL AUTO_INCREMENT,
+  id_userA INT NOT NULL,
+  id_userB INT NOT NULL,
+  result BOOLEAN,
+  PRIMARY KEY(id),
+  FOREIGN KEY(id_userA) REFERENCES Users(id),
+  FOREIGN KEY(id_userB) REFERENCES Users(id)
+);
+CREATE TABLE IF NOT EXISTS Likes(
+  id INT NOT NULL AUTO_INCREMENT,
+  id_userA INT NOT NULL,
+  id_userB INT NOT NULL,
+	result BOOLEAN,
+  PRIMARY KEY(id)
+  -- FOREIGN KEY(id_userA) REFERENCES Matches(id_userA),
+  -- FOREIGN KEY(id_userB) REFERENCES Matches(id_userB)
+);
+
+
+
 -- USER (all lat/long and home_lat/home_long are set to New Orleans)
 -- INSERT INTO Users (username, email, cell, latitude, longitude, home_town, googleId) VALUES ();
 INSERT INTO Users

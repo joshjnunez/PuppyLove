@@ -9,11 +9,18 @@ const sequelize = require('./db/db.js');
 require('./passport/passport');
 // const data = require('../data.json');
 const {
-  addUser, getUsers, getDogs,
-  addFriend, isAccCreated,
-  addDog, addLoc, getLocs, getFriends,
+  addUser,
+  getUsers,
+  getDogs,
+  addFriend,
+  isAccCreated,
+  addDog,
+  addLoc,
+  getLocs,
+  getFriends,
   getCurrentDog,
 } = require('./queries.js');
+const { User, Dog } = require('./db/db.js');
 
 const PORT = process.env.PORT || 3000;
 const CLIENT_PATH = path.join(__dirname, '../client/dist');
@@ -27,19 +34,25 @@ app.use(cors());
 app.use(express.static(CLIENT_PATH));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cookieSession({
-  name: 'session',
-  keys: ['key1', 'key2'],
-  secure: false,
-}));
+app.use(
+  cookieSession({
+    name: 'session',
+    keys: ['key1', 'key2'],
+    secure: false,
+  })
+);
 app.use(flash());
 
 /* ============================================================================ */
 
 /* Routes====================================================================== */
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+app.get(
+  '/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
 
-app.get('/google/callback',
+app.get(
+  '/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
     const { googleId } = req.user;
@@ -52,7 +65,8 @@ app.get('/google/callback',
         }
       })
       .catch((err) => res.status(500).send(err));
-  });
+  }
+);
 
 app.get('/dogs', (req, res) => {
   getDogs()
@@ -74,20 +88,31 @@ app.post('/dogs', (req, res) => {
     .catch((err) => res.status(500).send(err));
 });
 
-// app.post('/updateUserAndDog', (req, res) => {
-//   const userEditObj = req.body.user;
-//   const dogEditObj = req.body.dog;
-//   console.log('dogObj: ', dogEditObj);
-//   const userId = req.session.passport.user.id;
-//   const updateUserObj = null;
-//   addUser(userId, userEditObj)
-//     .then((result) => console.log(result))
-//     .catch((err) => console.log(err));
-//   updateDog(userId, dogEditObj).then((result) => {
-//     res.send({ user: updateUserObj, dog: result.data });
-//   })
-//     .catch((err) => console.log(err));
-// });
+app.post('/updateUserAndDog', (req, res) => {
+  const userEditObj = req.body.user;
+  const dogEditObj = req.body.dog;
+  console.log('User', userEditObj);
+  console.log('Dog', dogEditObj);
+  console.log('passport user id', req.session.passport.user);
+  const passId = req.session.passport.user.id;
+  const passEmail = req.session.passport.user.email;
+  User.update({
+    username: userEditObj.username,
+    cell: userEditObj.cell,
+    hometown: userEditObj.hometown,
+    // passId or leave as long googleId
+    googleId: passId,
+  }, { where: { email: passEmail || null } });
+  Dog.update({
+    dog_name: dogEditObj.dog_name,
+    weight: dogEditObj.weight,
+    breed: dogEditObj.breed,
+    age: dogEditObj.age,
+    description: dogEditObj.description,
+    fixed: dogEditObj.fixed,
+    image: dogEditObj.image,
+  }, { where: { id_user: passId } });
+});
 
 app.get('/currentDog', (req, res) => {
   const userId = req.session.passport.user.id;
@@ -164,9 +189,25 @@ app.get('/session', (req, res) => {
   res.send(req.session.passport.user);
 });
 
+// working on myProfile updating
+app.get('/profileUpdate', (req, res) => {
+  // res.send(User.findAll({ where: { googleId: req.body } }));
+  const yo = User.findAll().then((userObj) => res.send(userObj));
+  console.log(yo);
+  // .then((user) => {
+  //   console.log(req);
+  //   console.log(1, req.body);
+  //   console.log(2, req.query);
+  //   console.log(3, req.params);
+  //   res.send(user);
+  // })
+  // .catch((err) => console.log(err));
+});
+
 app.get('*', (req, res) => {
   res.sendFile(`${CLIENT_PATH}/index.html`);
 });
+
 
 /* ============================================================================ */
 

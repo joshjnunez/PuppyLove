@@ -2,28 +2,20 @@ require('dotenv').config();
 const { Sequelize, DataTypes } = require('sequelize');
 const { generate } = require('../../generateDogs');
 
-const {
-  DB_HOST,
-  DB_USER,
-  DB_NAME,
-} = process.env;
+const { DB_HOST, DB_USER, DB_NAME } = process.env;
 
-const sequelize = new Sequelize(
-  DB_NAME,
-  DB_USER,
-  '',
-  {
-    host: DB_HOST,
-    dialect: 'mysql',
-    define: {
-      timestamps: false,
-    },
+const sequelize = new Sequelize(DB_NAME, DB_USER, '', {
+  host: DB_HOST,
+  dialect: 'mysql',
+  define: {
+    timestamps: false,
   },
-);
+});
 
-sequelize.authenticate()
+sequelize
+  .authenticate()
   .then(() => {
-    console.log('Connection to db completed')
+    console.log('Connection to db completed');
     generate(); // Generates new dogs from the generateDogs.js script
   })
   .catch((err) => console.error('Oopsies there is an error: ', err));
@@ -121,30 +113,34 @@ const Location = sequelize.define('Location', {
   },
 });
 
-const FriendJoint = sequelize.define('FriendJoint', {
-  id_dog: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: 'dog',
-      key: 'id',
+const FriendJoint = sequelize.define(
+  'FriendJoint',
+  {
+    id_dog: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'dog',
+        key: 'id',
+      },
+      allowNull: false,
     },
-    allowNull: false,
-  },
-  id_dogFriend: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: 'dog',
-      key: 'id',
+    id_dogFriend: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'dog',
+        key: 'id',
+      },
+      allowNull: false,
     },
-    allowNull: false,
+    bool_friend: {
+      type: DataTypes.TINYINT,
+      allowNull: false,
+    },
   },
-  bool_friend: {
-    type: DataTypes.TINYINT,
-    allowNull: false,
-  },
-}, {
-  tableName: 'Friend_joint',
-});
+  {
+    tableName: 'Friend_joint',
+  }
+);
 
 module.exports = {
   sequelize,

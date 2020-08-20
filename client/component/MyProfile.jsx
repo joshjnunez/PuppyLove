@@ -4,17 +4,36 @@ import axios from 'axios';
 function MyProfile({ sessUser, sessDog, open }) {
   const { id, dog_name, breed, weight, age, fixed, description, image, id_user } = sessDog;
   const { username, cell, home_town, email } = sessUser
+
+  const sessUserId = sessUser.id;
+
+
+  //working on myProfile updating
+  //axios to db to grab all related user host info and user host dog info
+  //then reset state
+  //then render it to the DOM
+  // and do same for dogs
+  const reRenderProfile = (sessUserId) => {
+    // axios.get(`./profile/${sessUserId}`).then(res =>
+    //   //reset state
+    //   console.log(res.data)
+    //   ).catch(err => console.log(err))
+  }
+
+
+
   const updateUserAndDogInfo = (obj) => {
     axios.post('./updateUserAndDog', obj)
     .then((result) => {
       console.log('success')
-    }).catch((err) => console.log('fuuuuuuuck: ', err));
+    }).catch((err) => console.log('ERR', err));
   }
   const [editUserbuttonClicked, editChange] = useState(false);
   //user edit states
   const [usernameEdit, setUsername] = useState('');
   const [cellEdit, setCell] = useState('');
   const [hometownEdit, setHometown] = useState('');
+  const [emailEdit, setEmail] = useState('');
   //dog edit states
   const [dogNameEdit, setDogName] = useState('');
   const [weightEdit, setWeight] = useState('');
@@ -36,6 +55,7 @@ function MyProfile({ sessUser, sessDog, open }) {
       <label>Username:</label><br /><input onChange={(event) => onEvent(event, setUsername, username)} type="text" placeholder={username} /><br />
       <label>Cell:</label><br /><input onChange={(event) => onEvent(event, setCell, cell)} type="text" placeholder={cell} /><br />
       <label>Hometown:</label><br /><input onChange={(event) => onEvent(event, setHometown, home_town)} type="text" placeholder={home_town} /><br /><br />
+      <label>Email:</label><br /><input onChange={(event) => onEvent(event, setEmail, email)} type="text" placeholder={email} /><br /><br />
       <div>Edit Dog's Info</div>
       <label>Name:</label><br /><input onChange={(event) => onEvent(event, setDogName, dog_name)} type="text" placeholder={dog_name} /><br />
       <label>Weight:</label><br /><input onChange={(event) => onEvent(event, setWeight, weight)} type="text" placeholder={weight} /><br />
@@ -47,12 +67,13 @@ function MyProfile({ sessUser, sessDog, open }) {
         to="/myprofile"
         onClick={() => {
           editChange(false);
-          console.group('editinfo submit clicked')
+          console.group('edit info submit clicked')
           updateUserAndDogInfo({
             user: {
               username: usernameEdit,
               cell: cellEdit,
               hometown: hometownEdit,
+              email: emailEdit
             },
             dog: {
               dog_name: dogNameEdit,
@@ -73,7 +94,7 @@ function MyProfile({ sessUser, sessDog, open }) {
         <div id='divEditClicked'>
           <button id='settings' onClick={open}>Menu</button>
           <div class='profileContainer'>
-            <div>{`${username}'s Profile Inforamtion`}</div>
+            <div>{`${username}'s Profile Information`}</div>
             <div class='profileInfo'>{`Username: ${username}`}</div>
             <div class='profileInfo'>{`Email: ${email}`}</div>
             <div class='profileInfo'>{`Cell Phone Number: ${cell}`}</div>

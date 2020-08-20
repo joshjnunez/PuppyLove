@@ -3,15 +3,21 @@ import { Link, Route } from 'react-router-dom';
 import axios from 'axios';
 import { Row, Col } from "react-bootstrap";
 
-function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, index, setIndex }) {
+function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, index, setIndex, loadComplete }) {
 
   const [ dogDisplay, setDogDisplay ] = useState('');
   const [ dogDisplayInfo, setDogDisplayInfo ] = useState('');
 
   useEffect(() => {
     // console.log('the current index', index)
-    setDogDisplayInfo(displayDogs[index])
-    setDogDisplay(dogViews[index]);
+    if (displayDogs.length) {
+      setDogDisplayInfo(displayDogs[index])
+      setDogDisplay(dogViews[index]);
+    } else if (loadComplete) {
+      setDogDisplay(<div id='choice-box'><div id='alt'>Looks like you've made it through all the dogs in you're area. Please check back later.</div></div>)
+    } else {
+      setDogDisplay(<div id='choice-box'><div id='alt'>Looking for dogs...</div></div>)
+    }
   }, [dogViews, displayDogs]);
   
 
@@ -53,7 +59,21 @@ function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, in
           //   .then(() => console.log('this friend was added'))
           //   .catch((err) => console.error(err, 'we couldn\'t add this friend'));
           // };
-          
+    const no = dogDisplayInfo ?
+        <Col>
+          <button id='no' onClick={() => like(false)}>No</button>
+        </Col> : '';
+
+    const yes = dogDisplayInfo ?
+        <Col>
+          <button id='yes' onClick={() => like(true)}>Yes</button>
+        </Col> : '';
+
+    const profileLink = dogDisplayInfo ?
+        <Col>
+          <Link to={`/dogprofile/${dogDisplayInfo.id}`} id='view' onClick={() => getFriends(dogDisplayInfo.id)}>View Profile</Link>
+        </Col> : '';
+          // if (!dogDisplayInfo) setDogDisplay(<div id='choice-box'><div id='alt'>Looks like you've made it through all the dogs in you're area. Please check back later.</div></div>);
           return (
             <div>
       <div>
@@ -66,15 +86,9 @@ function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, in
           </Col>
         </Row>
         <Row id='select'>
-          <Col>
-            <button id='no' onClick={() => like(false)}>No</button>
-          </Col>
-          <Col>
-            <button id='yes' onClick={() => like(true)}>Yes</button>
-          </Col>
-          <Col>
-            <Link to={`/dogprofile/${dogDisplayInfo.id}`} id='view' onClick={() => getFriends(dogDisplayInfo.id)}>View Profile</Link>
-          </Col>
+          {no}
+          {yes}
+          {profileLink}
         </Row>
       </div>
     </div>

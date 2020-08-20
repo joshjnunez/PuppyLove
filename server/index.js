@@ -55,10 +55,25 @@ app.get('/google/callback',
       .catch((err) => res.status(500).send(err));
   });
 
-app.get('/dogs', (req, res) => {
-  // let { id } = req.params;
+app.get('/dogs/:id', (req, res) => {
+  const { id } = req.params;
   getDogs()
-    .then((list) => res.status(200).send(list))
+    .then(async (list) => {
+      const likes = await Likes.findAll({
+        where: {
+          id_userA: id,
+        },
+        raw: true,
+      });
+      const likesObj = {};
+      if (likes !== null) {
+        likes.forEach((like) => {
+          likesObj[like.id_userB] = null;
+        });
+      }
+      const filtered = list.filter((dog) => !((dog.id_user in likesObj) || dog.id_user.toString() === id));
+      res.status(200).send(filtered);
+    })
     .catch((err) => res.status(500).send(err));
 });
 
@@ -68,22 +83,21 @@ app.get('/dogs', (req, res) => {
 //     .then((list) => res.send(list))
 //     .catch((err) => res.sendStatus(500));
 // });
-app.get('/like/:id', async (req, res) => {
-  const { id } = req.params;
-  // const findDogs = await Dog.findAll({});
-  const likes = await Likes.findAll({
-    where: {
-      id_userA: id,
-    },
-    raw: true,
-  });
-  const likesObj = {};
-  likes.forEach((like) => {
-    likesObj[like.id_userB] = null;
-  });
-  res.send(likesObj);
-  // findDogs.filter((dog) => !((dog.id_user in likesObj) || dog.id_user === id));
-});
+// app.get('/like/:id', async (req, res) => {
+//   const { id } = req.params;
+//   const dogs = await Dog.findAll({});
+//   const likes = await Likes.findAll({
+//     where: {
+//       id_userA: id,
+//     },
+//     raw: true,
+//   });
+//   const likesObj = {};
+//   likes.forEach((like) => {
+//     likesObj[like.id_userB] = null;
+//   });
+//   dogs.filter((dog) => !((dog.id_user in likesObj) || dog.id_user === id));
+// });
 
 app.post('/dogs', (req, res) => {
   const dogInfo = req.body;

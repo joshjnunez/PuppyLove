@@ -15,32 +15,36 @@ function App(props) {
    const [ lng, setLng ] = useState('');
    const [ sessUser, setSessUser ] = useState({id: 0});
    const [ sessDog, setSessDog ] = useState('');
-   const [ dogViews, setDogViews ] = useState('');
-   const [ allDogs, setAllDogs ] = useState('');
-   const [ displayDogs, setDisplayDogs ] = useState('');
+   const [ dogViews, setDogViews ] = useState([]);
+   const [ allDogs, setAllDogs ] = useState([]);
+   const [ displayDogs, setDisplayDogs ] = useState([]);
    const [ friends, setFriends ] = useState('');
    const [ index, setIndex ] = useState(0);
    const [ filter, setFilter ] = useState(0);
-   const [ likes, setLikes ] = useState('');
+   const [ loadComplete, setLoadComplete ] = useState(false);
+   // const [ likes, setLikes ] = useState('');
 
    useEffect(() => {
       axios.get('/session')
       .then(response => {
          setSessUser(response.data)
-         getLikes(response.data.id)
+         return response.data.id
+      })
+      .then((id) => {
+         getDogs(id);
       })
       .catch(err => console.error(err));
    }, []);
 
-   const getLikes = (id) => {
-      const currentId = sessUser.id || id;
-      axios.get(`/like/${currentId}`)
-      .then(({ data }) => {
-         // filterDogs({ likes: data });
-         setLikes(data);
-         console.log('the likes obj A', data)
-      })
-   }
+   // const getLikes = (id) => {
+   //    const currentId = sessUser.id || id;
+   //    axios.get(`/like/${currentId}`)
+   //    .then(({ data }) => {
+   //       // filterDogs({ likes: data });
+   //       setLikes(data);
+   //       console.log('the likes obj A', data)
+   //    })
+   // }
 
    // useEffect(() => {
    //    if (displayDogs.length) {
@@ -60,30 +64,45 @@ function App(props) {
    //    .then(response => setSessDog(response.data[0]))
    //    .catch(err => console.error('could not set session dog: ', err));
    // }, []);
-
-   useEffect(() => {
-      axios.get(`/dogs`)
+   const getDogs = (id) => {
+      axios.get(`/dogs/${id}`)
       .then((response) => {
          let dogs = response.data;
+         setLoadComplete(true);
          setAllDogs(dogs);
          setDisplayDogs(dogs);
          // setDogDisplayInfo(dogs[index]);
          // filterDogs({ likes })
+         // console.log('the dogs from the server', dogs);
          return dogs;
       })
       .then((dogs) => {
-         setDogViews(dogs.map(option => {
-            return (
-               <div id='choice-box' key={option.id} style={{ backgroundImage: `url('${option.image}')` }}>
-                  <div id='title'>{option.dog_name}</div>
-                  <div id='breed'>{option.breed}</div>
-                  <div id='age'>{`${option.age} Years Old`}</div>
-               </div>
-            );
-         }));
+         if (dogs.length) {
+            setDogViews(dogs.map(option => {
+               return (
+                  <div id='choice-box' key={option.id} style={{ backgroundImage: `url('${option.image}')` }}>
+                     <div id='title'>{option.dog_name}</div>
+                     <div id='breed'>{option.breed}</div>
+                     <div id='age'>{`${option.age} Years Old`}</div>
+                  </div>
+               );
+            }));
+         } else {
+            // setDogViews(
+            // <div id='choice-box'>
+            //    <div id='title'>{option.dog_name}</div>
+            //    <div id='breed'>{option.breed}</div>
+            //    <div id='age'>{`${option.age} Years Old`}</div>
+            // </div>)
+            setDogViews(<div id='choice-box'><div id='alt'>Looks like you've made it through all the dogs in you're area. Please check back later.</div></div>)
+         }
       })
       .catch((err) => console.error(err, 'Could not get all dogs.'));
-   }, []);
+   }
+
+   // useEffect(() => {
+      
+   // }, []);
 
     useEffect(() => {
       const showPosition = (position) => {
@@ -118,11 +137,11 @@ function App(props) {
    const filterDogs = ({ minAge, maxAge, breed }) => {
       let dogs = allDogs.slice();
       // console.log('displayDogs are initially', dogs, dogs.length)
-      console.log('the likes obj B', likes, 'the sessUser Id:', sessUser.id)
-      if (typeof likes === 'object') {
-         dogs = dogs.filter((dog) => !(likes.hasOwnProperty(dog.id_user) || dog.id_user === sessUser.id))
-         console.log('displayDogs are now', dogs.length)
-      }
+      // console.log('the likes obj B', likes, 'the sessUser Id:', sessUser.id)
+      // if (typeof likes === 'object') {
+      //    dogs = dogs.filter((dog) => !(likes.hasOwnProperty(dog.id_user) || dog.id_user === sessUser.id))
+      //    console.log('displayDogs are now', dogs.length)
+      // }
 
       dogs = dogs.filter((dog) => {
          let bool = true;
@@ -154,11 +173,7 @@ function App(props) {
          <Sidebar sessUser={sessUser} sessDog={sessDog} getFriends={getFriends} allDogs={allDogs} />
          <div className='App'>
             <Switch>
-               <Route exact={true} path="/" render={() => {
-                  if (displayDogs.length) {
-                     return <Choice open={open} sessUser={sessUser} sessDog={sessDog} dogViews={dogViews} displayDogs={displayDogs} getFriends={getFriends} index={index} setIndex={setIndex} />
-                  }
-               } } />
+               <Route exact={true} path="/" render={() => (<Choice open={open} sessUser={sessUser} sessDog={sessDog} dogViews={dogViews} displayDogs={displayDogs} getFriends={getFriends} index={index} setIndex={setIndex} loadComplete={loadComplete} />)} />
                <Route exact path="/login" render={() => (<Login />)} />
                <Route path="/myprofile" render={() => (<MyProfile open={open} sessUser={sessUser} sessDog={sessDog} />)} />
                <Route path="/dogprofile" render={() => (<DogProfile open={open} sessUser={sessUser} sessDog={sessDog} allDogs={allDogs} friends={friends} getFriends={getFriends} />)} />

@@ -9,9 +9,15 @@ const sequelize = require('./db/db.js');
 require('./passport/passport');
 // const data = require('../data.json');
 const {
-  addUser, getUsers, getDogs,
-  addFriend, isAccCreated,
-  addDog, addLoc, getLocs, getFriends,
+  addUser,
+  getUsers,
+  getDogs,
+  addFriend,
+  isAccCreated,
+  addDog,
+  addLoc,
+  getLocs,
+  getFriends,
   getCurrentDog,
 } = require('./queries.js');
 
@@ -27,19 +33,25 @@ app.use(cors());
 app.use(express.static(CLIENT_PATH));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cookieSession({
-  name: 'session',
-  keys: ['key1', 'key2'],
-  secure: false,
-}));
+app.use(
+  cookieSession({
+    name: 'session',
+    keys: ['key1', 'key2'],
+    secure: false,
+  })
+);
 app.use(flash());
 
 /* ============================================================================ */
 
 /* Routes====================================================================== */
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+app.get(
+  '/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
 
-app.get('/google/callback',
+app.get(
+  '/google/callback',
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
     const { googleId } = req.user;
@@ -52,7 +64,8 @@ app.get('/google/callback',
         }
       })
       .catch((err) => res.status(500).send(err));
-  });
+  }
+);
 
 app.get('/dogs', (req, res) => {
   getDogs()

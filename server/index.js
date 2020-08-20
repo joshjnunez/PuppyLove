@@ -5,16 +5,17 @@ const cors = require('cors');
 const passport = require('passport');
 const cookieSession = require('cookie-session');
 const flash = require('connect-flash');
-const sequelize = require('./db/db.js');
 require('./passport/passport');
 // const data = require('../data.json')
 const {
   addUser, getUsers, getDogs,
   addFriend, isAccCreated,
   addDog, addLoc, getLocs, getFriends,
-  getCurrentDog, 
+  getCurrentDog,
 } = require('./queries.js');
-const { Likes, Matches } = require('./db/db.js');
+const { Likes, Matches, Sequelize, Dog } = require('./db/db.js');
+
+const { Op } = Sequelize;
 
 const PORT = process.env.PORT || 3000;
 const CLIENT_PATH = path.join(__dirname, '../client/dist');
@@ -71,8 +72,28 @@ app.get('/dogs/:id', (req, res) => {
           likesObj[like.id_userB] = null;
         });
       }
-      const filtered = list.filter((dog) => !((dog.id_user in likesObj) || dog.id_user.toString() === id));
-      res.status(200).send(filtered);
+      const responseObj = {};
+      responseObj.dogs = list.filter((dog) => !((dog.id_user in likesObj) || dog.id_user.toString() === id));
+      const matchIDs = await Matches.findAll({
+        where: {
+          [Op.or]: {
+            id_userA: { [Op.like]: `%${id}%` },
+            id_userB: { [Op.like]: `%${id}%` },
+          },
+        },
+      });
+      if (matchIDs !== null) {
+        responseObj.matches = await Promise.all(
+          matchIDs.map(async (entry) => {
+            const id_user = entry.id_userA.toString() === id ? entry.id_userB : entry.id_userA;
+            const dog = await Dog.findOne({ where: { id_user } });
+            return dog;
+          }),
+        );
+      }
+      // responseObj.matches = await
+
+      res.send(responseObj);
     })
     .catch((err) => res.status(500).send(err));
 });
@@ -201,7 +222,7 @@ app.get('*', (req, res) => {
 });
 
 // route to post like by user to db
-app.post('/like', async (req, res)=> {
+app.post('/like', async (req, res) => {
   const { result, dogOwnerId, userId } = req.body;
   console.log('this is the request body in like route', req.body);
   // res.sendStatus(200);
@@ -220,14 +241,14 @@ app.post('/like', async (req, res)=> {
   });
 
   if (likes !== null && result === true) {
-    res.send(likes);
+    res.send(true);
     Matches.create({
       id_userA: userId,
       id_userB: dogOwnerId,
       result: true,
     });
   } else {
-    res.sendStatus(201);
+    res.send(false);
   }
 });
 

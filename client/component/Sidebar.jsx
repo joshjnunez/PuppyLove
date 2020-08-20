@@ -20,6 +20,7 @@ function Sidebar({ sessUser, sessDog, getFriends, allDogs }) {
       <button id='settings' onClick={close}>Menu</button>
       <div className="nav">
         <Link to="/" id='choice'>Home</Link>
+        <Link to="/matches" id='matches'>Matches</Link>
         <Link to="/login" id='log' onClick={() => {
           logout();
           close();

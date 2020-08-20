@@ -3,7 +3,7 @@ import { Link, Route } from 'react-router-dom';
 import axios from 'axios';
 import { Row, Col } from "react-bootstrap";
 
-function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, index, setIndex, loadComplete }) {
+function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, index, setIndex, loadComplete, setMatches, matches, matchViews, setMatchViews }) {
 
   const [ dogDisplay, setDogDisplay ] = useState('');
   const [ dogDisplayInfo, setDogDisplayInfo ] = useState('');
@@ -28,21 +28,24 @@ function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, in
 
   const like = (result) => {
     const newIndex = index + 1;
+    const likedIndex = index
     axios.post('/like', {
         result, // boolean
         dogOwnerId: displayDogs[index].id_user,
         userId: sessUser.id
       })
       .then(({ data }) => {
-        console.log('the data from the response:', data);
-          if (data !== 'Created') {
-            console.log('there was a match')
+        console.log('the data from the match response:', data);
+          if (data === true) {
+            console.log('there was a match');
+            setMatches(matches.concat(displayDogs[likedIndex]));
+            setMatchViews(matchViews.concat(dogViews[likedIndex]));
           }
           // response should have bool if user was a match (if exists an entry in likes table that shows the dogOwnerID liked current user ID)
         })
         setIndex(newIndex);
         if (newIndex < dogViews.length) {
-          setDogDisplay(() => dogViews[newIndex]);
+          setDogDisplay(dogViews[newIndex]);
           setDogDisplayInfo(displayDogs[newIndex]);
         } else {
           setDogDisplay(<div id='choice-box'><div id='alt'>Looks like you've made it through all the dogs in you're area. Please check back later.</div></div>);
@@ -96,4 +99,3 @@ function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, in
 };
 
 export default Choice;
- 

@@ -9,6 +9,7 @@ import DogProfile from './DogProfile.jsx';
 import PopularLocations from './PopularLocations.jsx';
 import SignUp from './SignUp.jsx';
 import Preferences from './Preferences.jsx';
+import Matches from './Matches.jsx';
 
 function App(props) {
    const [ lat, setLat ] = useState('');
@@ -18,6 +19,8 @@ function App(props) {
    const [ dogViews, setDogViews ] = useState([]);
    const [ allDogs, setAllDogs ] = useState([]);
    const [ displayDogs, setDisplayDogs ] = useState([]);
+   const [ matches, setMatches ] = useState([]);
+   const [ matchViews, setMatchViews ] = useState([]);
    const [ friends, setFriends ] = useState('');
    const [ index, setIndex ] = useState(0);
    const [ filter, setFilter ] = useState(0);
@@ -67,16 +70,15 @@ function App(props) {
    const getDogs = (id) => {
       axios.get(`/dogs/${id}`)
       .then((response) => {
-         let dogs = response.data;
+         const { dogs, matches } = response.data;
+         console.log('the matches from the request body', matches);
          setLoadComplete(true);
-         setAllDogs(dogs);
          setDisplayDogs(dogs);
-         // setDogDisplayInfo(dogs[index]);
-         // filterDogs({ likes })
-         // console.log('the dogs from the server', dogs);
-         return dogs;
+         setAllDogs(dogs);
+         setMatches(matches);
+         return { dogs, matches }
       })
-      .then((dogs) => {
+      .then(({ dogs, matches }) => {
          if (dogs.length) {
             setDogViews(dogs.map(option => {
                return (
@@ -87,6 +89,17 @@ function App(props) {
                   </div>
                );
             }));
+         if (matches.length) {
+            setMatchViews(matches.map(option => {
+               return (
+                  <div id='choice-box' key={option.id} style={{ backgroundImage: `url('${option.image}')` }}>
+                     <div id='title'>{option.dog_name}</div>
+                     <div id='breed'>{option.breed}</div>
+                     <div id='age'>{`${option.age} Years Old`}</div>
+                  </div>
+               );
+            }));
+         }
          } else {
             // setDogViews(
             // <div id='choice-box'>
@@ -173,13 +186,14 @@ function App(props) {
          <Sidebar sessUser={sessUser} sessDog={sessDog} getFriends={getFriends} allDogs={allDogs} />
          <div className='App'>
             <Switch>
-               <Route exact={true} path="/" render={() => (<Choice open={open} sessUser={sessUser} sessDog={sessDog} dogViews={dogViews} displayDogs={displayDogs} getFriends={getFriends} index={index} setIndex={setIndex} loadComplete={loadComplete} />)} />
+               <Route exact={true} path="/" render={() => (<Choice open={open} sessUser={sessUser} sessDog={sessDog} dogViews={dogViews} displayDogs={displayDogs} getFriends={getFriends} index={index} setIndex={setIndex} loadComplete={loadComplete} setMatches={setMatches} matches={matches} matchViews={matchViews} setMatchViews={setMatchViews} />)} />
                <Route exact path="/login" render={() => (<Login />)} />
                <Route path="/myprofile" render={() => (<MyProfile open={open} sessUser={sessUser} sessDog={sessDog} />)} />
                <Route path="/dogprofile" render={() => (<DogProfile open={open} sessUser={sessUser} sessDog={sessDog} allDogs={allDogs} friends={friends} getFriends={getFriends} />)} />
                <Route path="/popular" render={() => (<PopularLocations sessUser={sessUser} sessDog={sessDog} google={props.google} open={open} center={{ lat: 29.9511, lng: 90.0715 }} zoom={10} />)} />
                <Route path="/signUp" render={() => (<SignUp sessUser={sessUser} sessDog={sessDog} getSessDog={getSessDog}/>)} />
                <Route path="/preferences" render={() => (<Preferences open={open} filterDogs={filterDogs} setFilter={setFilter} setIndex={setIndex}></Preferences>)} />
+               <Route path="/matches" render={() => (<Matches open={open} sessUser={sessUser} sessDog={sessDog} getSessDog={getSessDog} matches={matches} matchViews={matchViews} />)} />
             </Switch>
          </div>
       </Router>

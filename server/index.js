@@ -214,7 +214,11 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/session', (req, res) => {
-  res.send(req.session.passport.user);
+  if (req.session.passport) {
+    res.send(req.session.passport.user);
+  } else {
+    res.sendStatus(200);
+  }
 });
 
 app.get('*', (req, res) => {

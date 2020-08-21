@@ -3,7 +3,7 @@ import { Link, Route } from 'react-router-dom';
 import axios from 'axios';
 import { Row, Col } from "react-bootstrap";
 
-function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, index, setIndex, loadComplete, setMatches, matches, matchViews, setMatchViews }) {
+function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, index, setIndex, loadComplete, setMatches, matches, matchViews, setMatchViews, matchPopUp }) {
 
   const [ dogDisplay, setDogDisplay ] = useState('');
   const [ dogDisplayInfo, setDogDisplayInfo ] = useState('');
@@ -40,6 +40,7 @@ function Choice({ open, sessUser, sessDog, dogViews, displayDogs, getFriends, in
             console.log('there was a match');
             setMatches(matches.concat(displayDogs[likedIndex]));
             setMatchViews(matchViews.concat(dogViews[likedIndex]));
+            matchPopUp(displayDogs[likedIndex]);
           }
           // response should have bool if user was a match (if exists an entry in likes table that shows the dogOwnerID liked current user ID)
         })

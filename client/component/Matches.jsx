@@ -14,28 +14,27 @@ function Matches({ open, sessUser, sessDog, dogViews, getFriends, loadComplete, 
       setDogDisplayInfo(matches[index])
       setDogDisplay(matchViews[index]);
     } else {
-      setDogDisplay(<div id='choice-box'><div id='alt'>Looks like you don't have any matches.</div></div>)
+      setDogDisplay(<div id='choice-box'><div id='alt'>Looks like you don't have any new matches.</div></div>)
     }
   }, [matchViews, matches]);
 
   const next = () => {
     const newIndex = index + 1;
-
     setIndex(newIndex);
     if (newIndex < matchViews.length) {
       setDogDisplay(matchViews[newIndex]);
       setDogDisplayInfo(matches[newIndex]);
     } else {
-      setDogDisplay(<div id='choice-box'><div id='alt'>Looks like you don't have any matches.</div></div>);
+      setDogDisplay(<div id='choice-box'><div id='alt'>Looks like you don't have any new matches.</div></div>);
     }
   };
 
-    const nextBtn = dogDisplayInfo ?
+    const nextBtn = (index < matchViews.length) ?
         <Col>
           <button id='yes' onClick={() => next()}>Next</button>
         </Col> : '';
 
-    const profileLink = dogDisplayInfo ?
+    const profileLink = (index < matchViews.length) ?
         <Col>
           <Link to={`/dogprofile/${dogDisplayInfo.id}`} id='view'>View Profile</Link>
         </Col> : '';

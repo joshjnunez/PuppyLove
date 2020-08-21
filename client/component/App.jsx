@@ -10,6 +10,7 @@ import PopularLocations from './PopularLocations.jsx';
 import SignUp from './SignUp.jsx';
 import Preferences from './Preferences.jsx';
 import Matches from './Matches.jsx';
+import MatchPopUp from './MatchPopUp.jsx';
 
 function App(props) {
    const [ lat, setLat ] = useState('');
@@ -21,6 +22,7 @@ function App(props) {
    const [ displayDogs, setDisplayDogs ] = useState([]);
    const [ matches, setMatches ] = useState([]);
    const [ matchViews, setMatchViews ] = useState([]);
+   const [ newMatch, setNewMatch ] = useState({});
    const [ friends, setFriends ] = useState('');
    const [ index, setIndex ] = useState(0);
    const [ filter, setFilter ] = useState(0);
@@ -89,6 +91,9 @@ function App(props) {
                   </div>
                );
             }));
+         } else {
+            setDogViews(<div id='choice-box'><div id='alt'>Looks like you've made it through all the dogs in you're area. Please check back later.</div></div>)
+         }
          if (matches.length) {
             setMatchViews(matches.map(option => {
                return (
@@ -100,15 +105,13 @@ function App(props) {
                );
             }));
          }
-         } else {
             // setDogViews(
             // <div id='choice-box'>
             //    <div id='title'>{option.dog_name}</div>
             //    <div id='breed'>{option.breed}</div>
             //    <div id='age'>{`${option.age} Years Old`}</div>
             // </div>)
-            setDogViews(<div id='choice-box'><div id='alt'>Looks like you've made it through all the dogs in you're area. Please check back later.</div></div>)
-         }
+         
       })
       .catch((err) => console.error(err, 'Could not get all dogs.'));
    }
@@ -133,6 +136,14 @@ function App(props) {
    const open = () => {
       document.getElementById("mySidenav").style.width = "280px";
    };
+
+   const matchPopUp = (dog) => {
+      
+      console.log('the matched dog is:', dog);
+      setNewMatch(dog);
+      document.getElementById("matchPopUp").style.width = "800px";
+
+   }
 
    const getFriends = (dogId) => {
       // console.log('hit getFriends', dogId);
@@ -184,12 +195,13 @@ function App(props) {
    return (
       <Router>
          <Sidebar sessUser={sessUser} sessDog={sessDog} getFriends={getFriends} allDogs={allDogs} />
+         <MatchPopUp dog={newMatch} />
          <div className='App'>
             <Switch>
-               <Route exact={true} path="/" render={() => (<Choice open={open} sessUser={sessUser} sessDog={sessDog} dogViews={dogViews} displayDogs={displayDogs} getFriends={getFriends} index={index} setIndex={setIndex} loadComplete={loadComplete} setMatches={setMatches} matches={matches} matchViews={matchViews} setMatchViews={setMatchViews} />)} />
+               <Route exact={true} path="/" render={() => (<Choice open={open} sessUser={sessUser} sessDog={sessDog} dogViews={dogViews} displayDogs={displayDogs} getFriends={getFriends} index={index} setIndex={setIndex} loadComplete={loadComplete} setMatches={setMatches} matches={matches} matchViews={matchViews} setMatchViews={setMatchViews} matchPopUp={matchPopUp} />)} />
                <Route exact path="/login" render={() => (<Login />)} />
                <Route path="/myprofile" render={() => (<MyProfile open={open} sessUser={sessUser} sessDog={sessDog} />)} />
-               <Route path="/dogprofile" render={() => (<DogProfile open={open} sessUser={sessUser} sessDog={sessDog} allDogs={allDogs} friends={friends} getFriends={getFriends} />)} />
+               <Route path="/dogprofile" render={() => (<DogProfile open={open} sessUser={sessUser} sessDog={sessDog} allDogs={allDogs} friends={friends} getFriends={getFriends} matches={matches}/>)} />
                <Route path="/popular" render={() => (<PopularLocations sessUser={sessUser} sessDog={sessDog} google={props.google} open={open} center={{ lat: 29.9511, lng: 90.0715 }} zoom={10} />)} />
                <Route path="/signUp" render={() => (<SignUp sessUser={sessUser} sessDog={sessDog} getSessDog={getSessDog}/>)} />
                <Route path="/preferences" render={() => (<Preferences open={open} filterDogs={filterDogs} setFilter={setFilter} setIndex={setIndex}></Preferences>)} />

@@ -9,6 +9,8 @@ import DogProfile from './DogProfile.jsx';
 import PopularLocations from './PopularLocations.jsx';
 import SignUp from './SignUp.jsx';
 import Preferences from './Preferences.jsx';
+import Matches from './Matches.jsx';
+import MatchPopUp from './MatchPopUp.jsx';
 
 function App(props) {
   const [lat, setLat] = useState('');
@@ -18,11 +20,13 @@ function App(props) {
   const [dogViews, setDogViews] = useState([]);
   const [allDogs, setAllDogs] = useState([]);
   const [displayDogs, setDisplayDogs] = useState([]);
+  const [matches, setMatches] = useState([]);
+  const [matchViews, setMatchViews] = useState([]);
+  const [newMatch, setNewMatch] = useState({});
   const [friends, setFriends] = useState('');
   const [index, setIndex] = useState(0);
   const [filter, setFilter] = useState(0);
   const [loadComplete, setLoadComplete] = useState(false);
-  // const [ likes, setLikes ] = useState('');
 
   useEffect(() => {
     axios
@@ -38,107 +42,61 @@ function App(props) {
   }, []);
 
   // useEffect(() => {
-  //    axios.get('/users').then(response => {
-  //       setAllUsers(response.data)
-  //       // response.data
-  //    }).catch(err => console.log(err))
+  //     axios
+  //       .get('/currentDog')
+  //       .then((response) => {
+  //         console.log(response);
+  //         setSessDog(response.data[0]);
+  //       })
+  //       .catch((err) => console.error('could not set session dog: ', err));
+
   // }, []);
 
   // useEffect(() => {
-  //    axios.get('/myProfileInfo')
-  //       .then(response => setSessUser(response.data[0]))
-  //       .catch(err => console.log(16, err));
-  // }, [])
-
-  /*********COMMENTED THIS OUT  */
-  useEffect(() => {
-    if (!sessDog) {
-      console.log(sessDog, 'sessdog');
-      console.log('no current dog');
-    } else {
-      axios
-        .get('/currentDog')
-        .then((response) => {
-          console.log(response);
-          setSessDog(response.data[0]);
-        })
-        .catch((err) => console.error('could not set session dog: ', err));
-    }
-  }, []);
-
-  useEffect(() => {
-    axios
-      .get('/dogs')
-      .then((response) => {
-        setAllDogs(response.data);
-        setDogDisplayInfo(response.data[0]);
-      })
-      .catch((err) => console.error(err, 'Could not get all dogs.'));
-  }, []);
-  //error on line 57
-  useEffect(() => {
-    axios
-      .get('/dogs')
-      .then((response) => {
-        return response.data.map((option) => {
-          return (
-            <div
-              id="choice-box"
-              key={option.id}
-              style={{ backgroundImage: `url('${option.image}')` }}
-            >
-              <div id="title">{option.dog_name}</div>
-              <div id="breed">{option.breed}</div>
-              <div id="age">{`${option.age} Years Old`}</div>
-            </div>
-          );
-        });
-      })
-      .then((choices) => setDogViews(choices))
-      .catch((err) => console.error(err, 'Could not get all dogs.'));
-  }, []);
-  // const getLikes = (id) => {
-  //    const currentId = sessUser.id || id;
-  //    axios.get(`/like/${currentId}`)
-  //    .then(({ data }) => {
-  //       // filterDogs({ likes: data });
-  //       setLikes(data);
-  //       console.log('the likes obj A', data)
-  //    })
-  // }
-
-  // useEffect(() => {
-  //    if (displayDogs.length) {
-  //       filterDogs({ likes })
-  //    }
-  //    console.log('dogs:', displayDogs, 'likes', likes);
-  // }, [likes, allDogs, index])
-
-  // useEffect(() => {
-  //    axios.get('/myProfileInfo')
-  //       .then(response => setSessUser(response.data[0]))
-  //       .catch(err => console.log(16, err));
-  // }, [])
-
-  // useEffect(() => {
-  //    axios.get('/currentDog')
-  //    .then(response => setSessDog(response.data[0]))
-  //    .catch(err => console.error('could not set session dog: ', err));
+  //   axios
+  //     .get('/dogs')
+  //     .then((response) => {
+  //       setAllDogs(response.data);
+  //       setDogDisplayInfo(response.data[0]);
+  //     })
+  //     .catch((err) => console.error(err, 'Could not get all dogs.'));
   // }, []);
+
+  // useEffect(() => {
+  //   axios
+  //     .get('/dogs')
+  //     .then((response) => {
+  //       return response.data.map((option) => {
+  //         return (
+  //           <div
+  //             id="choice-box"
+  //             key={option.id}
+  //             style={{ backgroundImage: `url('${option.image}')` }}
+  //           >
+  //             <div id="title">{option.dog_name}</div>
+  //             <div id="breed">{option.breed}</div>
+  //             <div id="age">{`${option.age} Years Old`}</div>
+  //           </div>
+  //         );
+  //       });
+  //     })
+  //     .then((choices) => setDogViews(choices))
+  //     .catch((err) => console.error(err, 'Could not get all dogs.'));
+  // }, []);
+
   const getDogs = (id) => {
     axios
       .get(`/dogs/${id}`)
       .then((response) => {
-        let dogs = response.data;
+        const { dogs, matches } = response.data;
+        console.log('the matches from the request body', matches);
         setLoadComplete(true);
-        setAllDogs(dogs);
         setDisplayDogs(dogs);
-        // setDogDisplayInfo(dogs[index]);
-        // filterDogs({ likes })
-        // console.log('the dogs from the server', dogs);
-        return dogs;
+        setAllDogs(dogs);
+        setMatches(matches);
+        return { dogs, matches };
       })
-      .then((dogs) => {
+      .then(({ dogs, matches }) => {
         if (dogs.length) {
           setDogViews(
             dogs.map((option) => {
@@ -156,12 +114,6 @@ function App(props) {
             })
           );
         } else {
-          // setDogViews(
-          // <div id='choice-box'>
-          //    <div id='title'>{option.dog_name}</div>
-          //    <div id='breed'>{option.breed}</div>
-          //    <div id='age'>{`${option.age} Years Old`}</div>
-          // </div>)
           setDogViews(
             <div id="choice-box">
               <div id="alt">
@@ -171,13 +123,26 @@ function App(props) {
             </div>
           );
         }
+        if (matches.length) {
+          setMatchViews(
+            matches.map((option) => {
+              return (
+                <div
+                  id="choice-box"
+                  key={option.id}
+                  style={{ backgroundImage: `url('${option.image}')` }}
+                >
+                  <div id="title">{option.dog_name}</div>
+                  <div id="breed">{option.breed}</div>
+                  <div id="age">{`${option.age} Years Old`}</div>
+                </div>
+              );
+            })
+          );
+        }
       })
       .catch((err) => console.error(err, 'Could not get all dogs.'));
   };
-
-  // useEffect(() => {
-
-  // }, []);
 
   useEffect(() => {
     const showPosition = (position) => {
@@ -196,11 +161,21 @@ function App(props) {
     document.getElementById('mySidenav').style.width = '280px';
   };
 
-  const getFriends = (dogId) => {
-    // console.log('hit getFriends', dogId);
-    // axios.post('/dogFriends', { doggyId: dogId })
-    // .then(response => setFriends(response.data))
-    // .catch(() => console.error('We could not get this dog\'s friends'));
+  // const getSessDog = () => {
+  //   axios
+  //     .get('/currentDog')
+  //     .then((response) => setSessDog(response.data[0]))
+  //     .catch((err) => console.error('could not set session dog: ', err));
+  // };
+
+  // const open = () => {
+  //   document.getElementById('mySidenav').style.width = '280px';
+  // };
+
+  const matchPopUp = (dog) => {
+    console.log('the matched dog is:', dog);
+    setNewMatch(dog);
+    document.getElementById('matchPopUp').style.width = '800px';
   };
 
   const getSessDog = () => {
@@ -212,12 +187,6 @@ function App(props) {
 
   const filterDogs = ({ minAge, maxAge, breed }) => {
     let dogs = allDogs.slice();
-    // console.log('displayDogs are initially', dogs, dogs.length)
-    // console.log('the likes obj B', likes, 'the sessUser Id:', sessUser.id)
-    // if (typeof likes === 'object') {
-    //    dogs = dogs.filter((dog) => !(likes.hasOwnProperty(dog.id_user) || dog.id_user === sessUser.id))
-    //    console.log('displayDogs are now', dogs.length)
-    // }
 
     dogs = dogs.filter((dog) => {
       let bool = true;
@@ -252,12 +221,8 @@ function App(props) {
 
   return (
     <Router>
-      <Sidebar
-        sessUser={sessUser}
-        sessDog={sessDog}
-        getFriends={getFriends}
-        allDogs={allDogs}
-      />
+      <Sidebar sessUser={sessUser} sessDog={sessDog} allDogs={allDogs} />
+      <MatchPopUp dog={newMatch} />
       <div className="App">
         <Switch>
           <Route
@@ -270,10 +235,14 @@ function App(props) {
                 sessDog={sessDog}
                 dogViews={dogViews}
                 displayDogs={displayDogs}
-                getFriends={getFriends}
                 index={index}
                 setIndex={setIndex}
                 loadComplete={loadComplete}
+                setMatches={setMatches}
+                matches={matches}
+                matchViews={matchViews}
+                setMatchViews={setMatchViews}
+                matchPopUp={matchPopUp}
               />
             )}
           />
@@ -293,7 +262,7 @@ function App(props) {
                 sessDog={sessDog}
                 allDogs={allDogs}
                 friends={friends}
-                getFriends={getFriends}
+                matches={matches}
               />
             )}
           />
@@ -329,6 +298,19 @@ function App(props) {
                 setFilter={setFilter}
                 setIndex={setIndex}
               ></Preferences>
+            )}
+          />
+          <Route
+            path="/matches"
+            render={() => (
+              <Matches
+                open={open}
+                sessUser={sessUser}
+                sessDog={sessDog}
+                getSessDog={getSessDog}
+                matches={matches}
+                matchViews={matchViews}
+              />
             )}
           />
         </Switch>

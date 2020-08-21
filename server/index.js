@@ -5,11 +5,10 @@ const cors = require('cors');
 const passport = require('passport');
 const cookieSession = require('cookie-session');
 const flash = require('connect-flash');
-const sequelize = require('./db/db.js');
 require('./passport/passport');
 // const data = require('../data.json')
 
-const { User, Dog } = require('./db/db.js');
+// const { User, Dog } = require('./db/db.js');
 const {
   addUser,
   getUsers,
@@ -22,7 +21,9 @@ const {
   getFriends,
   getCurrentDog,
 } = require('./queries.js');
-const { Likes, Matches } = require('./db/db.js');
+const { Likes, Matches, Sequelize, Dog } = require('./db/db.js');
+
+const { Op } = Sequelize;
 
 const PORT = process.env.PORT || 3000;
 const CLIENT_PATH = path.join(__dirname, '../client/dist');
@@ -86,10 +87,33 @@ app.get('/dogs/:id', (req, res) => {
           likesObj[like.id_userB] = null;
         });
       }
-      const filtered = list.filter(
+      const responseObj = {};
+      responseObj.dogs = list.filter(
         (dog) => !(dog.id_user in likesObj || dog.id_user.toString() === id)
       );
-      res.status(200).send(filtered);
+      const matchIDs = await Matches.findAll({
+        where: {
+          [Op.or]: {
+            id_userA: { [Op.like]: `%${id}%` },
+            id_userB: { [Op.like]: `%${id}%` },
+          },
+        },
+      });
+      if (matchIDs !== null) {
+        responseObj.matches = await Promise.all(
+          matchIDs.map(async (entry) => {
+            const id_user =
+              entry.id_userA.toString() === id
+                ? entry.id_userB
+                : entry.id_userA;
+            const dog = await Dog.findOne({ where: { id_user } });
+            return dog;
+          })
+        );
+      }
+      // responseObj.matches = await
+
+      res.send(responseObj);
     })
     .catch((err) => res.status(500).send(err));
 });
@@ -227,7 +251,11 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/session', (req, res) => {
-  res.send(req.session.passport.user);
+  if (req.session.passport) {
+    res.send(req.session.passport.user);
+  } else {
+    res.sendStatus(200);
+  }
 });
 
 // working on myProfile updating
@@ -269,14 +297,14 @@ app.post('/like', async (req, res) => {
   });
 
   if (likes !== null && result === true) {
-    res.send(likes);
+    res.send(true);
     Matches.create({
       id_userA: userId,
       id_userB: dogOwnerId,
       result: true,
     });
   } else {
-    res.sendStatus(201);
+    res.send(false);
   }
 });
 

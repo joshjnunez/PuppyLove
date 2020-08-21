@@ -180,7 +180,7 @@ const Likes = sequelize.define('Likes', {
 
 // added matches and like to be routed
 module.exports = {
-  sequelize,
+  Sequelize,
   User,
   Dog,
   Location,

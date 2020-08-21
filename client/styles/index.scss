@@ -1,21 +1,21 @@
-$mainColor : rgb(207, 161, 101);
-$backColor : rgb(50, 49, 66);
-$textBlue : rgb(0, 144, 178);
-$textBlack : rgb(32, 32, 32);
-$border : rgb(96, 148, 201);
-$yes : rgb(20, 126, 52);
-$no : rgb(126, 20, 46);
-$active : rgb(178, 85, 0);
+$mainColor: rgb(156, 118, 35);
+$backColor: rgb(90, 40, 27);
+$textBlue: rgb(0, 144, 178);
+$textBlack: rgb(32, 32, 32);
+$border: rgb(96, 148, 201);
+$yes: rgb(20, 126, 52);
+$no: rgb(126, 20, 46);
+$active: rgb(178, 85, 0);
 $hover: rgb(255, 123, 0);
 
 @mixin hoverAction() {
   &:hover {
     cursor: pointer;
-      color: $hover;
-    }
-    &:active {
-        color: $active;
-    }
+    color: $hover;
+  }
+  &:active {
+    color: $active;
+  }
 }
 
 @mixin swipe($choice) {
@@ -27,7 +27,7 @@ $hover: rgb(255, 123, 0);
   border-radius: 20px;
   &:hover {
     cursor: pointer;
-    box-shadow: 5px 8px 18px rgba(255, 123, 0, .4);
+    box-shadow: 5px 8px 18px rgba(255, 123, 0, 0.4);
   }
 }
 
@@ -58,7 +58,7 @@ body {
   height: 100%;
   width: 90vw;
   background-color: $mainColor;
-  transition: margin-left .5s;
+  transition: margin-left 0.5s;
   padding: 20px;
   z-index: -1;
   margin-left: 15px;
@@ -66,6 +66,17 @@ body {
     @include hoverAction();
     position: absolute;
     top: 20px;
+    font-size: xx-large;
+    margin-left: 20px;
+    text-decoration: underline;
+    color: rgb(230, 222, 222);
+    border: none;
+    background: none;
+  }
+  #homeButton {
+    @include hoverAction();
+    position: absolute;
+    top: 80px;
     font-size: xx-large;
     margin-left: 20px;
     text-decoration: underline;
@@ -114,22 +125,22 @@ h3 {
     margin-left: 10px;
   }
   #view {
-    font-size: 40px;
+    font-size: 30px;
     margin: 0 50px 30px 50px;
     text-decoration: none;
     color: $textBlue;
     &:hover {
-    cursor: pointer;
+      cursor: pointer;
       color: $textBlack;
     }
     &:active {
-        color: $active;
+      color: $active;
     }
   }
   #yes {
-      @include swipe($yes);
-      margin-right: 10px;
-    }
+    @include swipe($yes);
+    margin-right: 10px;
+  }
 }
 
 #choice-box {
@@ -166,7 +177,7 @@ h3 {
   #age {
     @include deets();
     top: 82%;
-    left: 8%
+    left: 8%;
   }
 }
 
@@ -200,7 +211,7 @@ h3 {
     #log {
       @include hoverAction();
       @include link();
-      top: 160px;
+      top: 520px;
     }
     #pro {
       @include hoverAction();
@@ -226,6 +237,11 @@ h3 {
       @include hoverAction();
       @include link();
       top: 460px;
+    }
+    #matches {
+      @include hoverAction();
+      @include link();
+      top: 160px;
     }
   }
 }
@@ -273,19 +289,16 @@ h3 {
     color: $textBlack;
   }
   &:active {
-      color: $active;
+    color: $active;
   }
 }
 
 #loc-box {
-
 }
 
 .create {
-
 }
 .create-desc {
-
 }
 
 .input-field {
@@ -293,7 +306,7 @@ h3 {
   height: 35px;
   font-size: 16px;
   margin: 10px 0 10px 340px;
-  padding-left: 10px
+  padding-left: 10px;
 }
 
 .map {

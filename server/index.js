@@ -7,7 +7,9 @@ const cookieSession = require('cookie-session');
 const flash = require('connect-flash');
 const sequelize = require('./db/db.js');
 require('./passport/passport');
-// const data = require('../data.json');
+// const data = require('../data.json')
+
+const { User, Dog } = require('./db/db.js');
 const {
   addUser,
   getUsers,
@@ -20,7 +22,7 @@ const {
   getFriends,
   getCurrentDog,
 } = require('./queries.js');
-const { User, Dog } = require('./db/db.js');
+const { Likes, Matches } = require('./db/db.js');
 
 const PORT = process.env.PORT || 3000;
 const CLIENT_PATH = path.join(__dirname, '../client/dist');
@@ -68,9 +70,27 @@ app.get(
   }
 );
 
-app.get('/dogs', (req, res) => {
+app.get('/dogs/:id', (req, res) => {
+  const { id } = req.params;
   getDogs()
-    .then((list) => res.status(200).send(list))
+    .then(async (list) => {
+      const likes = await Likes.findAll({
+        where: {
+          id_userA: id,
+        },
+        raw: true,
+      });
+      const likesObj = {};
+      if (likes !== null) {
+        likes.forEach((like) => {
+          likesObj[like.id_userB] = null;
+        });
+      }
+      const filtered = list.filter(
+        (dog) => !(dog.id_user in likesObj || dog.id_user.toString() === id)
+      );
+      res.status(200).send(filtered);
+    })
     .catch((err) => res.status(500).send(err));
 });
 
@@ -79,6 +99,21 @@ app.get('/dogs', (req, res) => {
 //   getUser(userId)
 //     .then((list) => res.send(list))
 //     .catch((err) => res.sendStatus(500));
+// });
+// app.get('/like/:id', async (req, res) => {
+//   const { id } = req.params;
+//   const dogs = await Dog.findAll({});
+//   const likes = await Likes.findAll({
+//     where: {
+//       id_userA: id,
+//     },
+//     raw: true,
+//   });
+//   const likesObj = {};
+//   likes.forEach((like) => {
+//     likesObj[like.id_userB] = null;
+//   });
+//   dogs.filter((dog) => !((dog.id_user in likesObj) || dog.id_user === id));
 // });
 
 app.post('/dogs', (req, res) => {
@@ -96,22 +131,28 @@ app.post('/updateUserAndDog', (req, res) => {
   console.log('passport user id', req.session.passport.user);
   const passId = req.session.passport.user.id;
   const passEmail = req.session.passport.user.email;
-  User.update({
-    username: userEditObj.username,
-    cell: userEditObj.cell,
-    hometown: userEditObj.hometown,
-    // passId or leave as long googleId
-    googleId: passId,
-  }, { where: { email: passEmail || null } });
-  Dog.update({
-    dog_name: dogEditObj.dog_name,
-    weight: dogEditObj.weight,
-    breed: dogEditObj.breed,
-    age: dogEditObj.age,
-    description: dogEditObj.description,
-    fixed: dogEditObj.fixed,
-    image: dogEditObj.image,
-  }, { where: { id_user: passId } });
+  User.update(
+    {
+      username: userEditObj.username,
+      cell: userEditObj.cell,
+      hometown: userEditObj.hometown,
+      // passId or leave as long googleId
+      googleId: passId,
+    },
+    { where: { email: passEmail || null } }
+  );
+  Dog.update(
+    {
+      dog_name: dogEditObj.dog_name,
+      weight: dogEditObj.weight,
+      breed: dogEditObj.breed,
+      age: dogEditObj.age,
+      description: dogEditObj.description,
+      fixed: dogEditObj.fixed,
+      image: dogEditObj.image,
+    },
+    { where: { id_user: passId } }
+  );
 });
 
 app.get('/currentDog', (req, res) => {
@@ -208,6 +249,38 @@ app.get('*', (req, res) => {
   res.sendFile(`${CLIENT_PATH}/index.html`);
 });
 
+// route to post like by user to db
+app.post('/like', async (req, res) => {
+  const { result, dogOwnerId, userId } = req.body;
+  console.log('this is the request body in like route', req.body);
+  // res.sendStatus(200);
+  const newLike = await Likes.create({
+    id_userB: dogOwnerId,
+    id_userA: userId,
+    result,
+  });
+
+  const likes = await Likes.findOne({
+    where: {
+      id_userA: dogOwnerId,
+      id_userB: userId,
+      result: true,
+    },
+  });
+
+  if (likes !== null && result === true) {
+    res.send(likes);
+    Matches.create({
+      id_userA: userId,
+      id_userB: dogOwnerId,
+      result: true,
+    });
+  } else {
+    res.sendStatus(201);
+  }
+});
+
+// app.get('/')
 
 /* ============================================================================ */
 
